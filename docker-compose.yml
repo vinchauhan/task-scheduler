@@ -39,6 +39,14 @@ services:
       roachnet:
         aliases:
           - roach3
+  db-init:
+    image: cockroachdb/cockroach:v1.1.3
+    networks:
+      - roachnet
+    volumes:
+      - ./db/setup_db.sh:/setup_db.sh
+    entrypoint: "/bin/bash"
+    command: /setup_db.sh
 
 networks:
   roachnet:

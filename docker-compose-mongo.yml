@@ -1,0 +1,28 @@
+version: '2'
+services:
+  account-mongo-db:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_NAME: piggy
+      MONGO_INITDB_ROOT_USERNAME: vchauhan
+      MONGO_INITDB_ROOT_PASSWORD: vchauhan
+    ports:
+      - 26000:27017
+  auth-mongo-db:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_NAME: auth-db
+      MONGO_INITDB_ROOT_USERNAME: vchauhan
+      MONGO_INITDB_ROOT_PASSWORD: vchauhan
+    ports:
+      - 26001:27017
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example

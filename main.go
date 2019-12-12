@@ -13,6 +13,8 @@ const (
 
 func main() {
 
+	clientOptions := options.Client
+
 	address := fmt.Sprintf(":%d", webPort)
 	if err := http.ListenAndServe(address, nil); err != nil {
 		log.Fatalf("Failed to start the server : %v\n", err)
