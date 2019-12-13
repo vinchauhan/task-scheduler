@@ -35,7 +35,7 @@ func main() {
 	//fmt.Println("Connected to MongoDB!")
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
-		log.Fatalf("Could not open connection to db %v\n", err)
+		log.Fatalf("Could not open connection to Database : ?? %v\n", err)
 		return
 	}
 
@@ -43,7 +43,7 @@ func main() {
 
 	//ping the database
 	if err = db.Ping(); err != nil {
-		log.Fatalf("Could not ping to the db : %v\n", err)
+		log.Fatalf("Could not ping to the Database : ?? %v\n", err)
 	}
 
 	log.Printf("Connected to the Database.!")

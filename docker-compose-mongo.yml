@@ -1,6 +1,6 @@
 version: '2'
 services:
-  account-mongo-db:
+  mongo-db:
     image: mongo
     restart: always
     environment:
@@ -26,3 +26,13 @@ services:
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  app:
+    image: golang:1.13.5-alpine
+    volumes:
+      - .:/go/src/task-scheduler
+    working_dir: /go/src/task-scheduler
+    command: apk add build-base && go run mongo.go
+    links:
+      - mongo-db
+    environment:
+      MONGO_URL: mongo-db:26000

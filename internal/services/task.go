@@ -14,7 +14,7 @@ var (
 //CreateTask method creates a task on the database
 func (s *Service) CreateTask(ctx context.Context, taskID string, priority string, skills []string) error {
 
-	var subquery = "and"
+	var subquery = ","
 	//If skills for the passed task is nil > The system cannot decide which agent to be assigned.
 	if len(skills) == 0 {
 		return ErrTaskCannotBeAssigned
@@ -22,10 +22,10 @@ func (s *Service) CreateTask(ctx context.Context, taskID string, priority string
 
 	//Check the skill mapping table to see if the skills for the task matches any agent.
 	for i, skill := range skills {
-		subquery = fmt.Sprintf("skill=$%d ", i+1) + subquery
+		subquery = fmt.Sprintf("$%d", i+1) + subquery
 		fmt.Printf("index , value %d %s", i, skill)
 	}
-	query := "SELECT * from skillmapping where " + subquery
+	query := "SELECT * from skillmapping where skill in(" + subquery
 	fmt.Printf("query is %s", query)
 	return nil
 }
