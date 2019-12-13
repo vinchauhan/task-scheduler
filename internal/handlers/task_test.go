@@ -15,7 +15,7 @@ var _ = Describe("Task", func() {
 
 		resp := httptest.NewRecorder()
 		req := httptest.NewRequest("POST", "/xyz", nil)
-		h := handlers.New()
+		//h := handlers.New()
 		taskHandler := http.HandlerFunc(handlers.CreateNewTask)
 		taskHandler.ServeHTTP(resp, req)
 

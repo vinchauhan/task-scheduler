@@ -45,9 +45,9 @@ services:
       - roachnet
     volumes:
       - ./db/setup_db.sh:/setup_db.sh
+      - ./db/schema.sql:/cockroach/schema.sql
     entrypoint: "/bin/bash"
     command: /setup_db.sh
-
 networks:
   roachnet:
     driver: bridge

@@ -1,8 +1,11 @@
 package services
 
-type Service struct {
+import "database/sql"
 
+type Service struct {
+	db *sql.DB
 }
 
-func New(){
+func New(db *sql.DB) *Service {
+	return &Service{db: db}
 }

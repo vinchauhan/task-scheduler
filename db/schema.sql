@@ -21,8 +21,17 @@ CREATE TABLE IF NOT EXISTS skills (
 
 CREATE TABLE IF NOT EXISTS skillmapping (
       skillMapId SERIAL NOT NULL PRIMARY KEY,
-      agentId VARCHAR NOT NULL UNIQUE
+      skill VARCHAR NOT NULL,
+      agentId INTEGER NOT NULL
 );
 
+INSERT INTO skillmapping(skillMapId, skill, agentId) VALUES
+(1, 'skill1', 1),
+(2, 'skill1', 2),
+(3, 'skill1', 3),
+(4, 'skill2', 1),
+(5, 'skill2', 3),
+(6, 'skill3', 1),
+(7, 'skill3', 2);
 
 

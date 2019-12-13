@@ -1,0 +1,21 @@
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+    "id": "1",
+    "priority":"high", 
+    "skills":["skill1, skill2"]
+}
+
+###
+
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+    "id": "1",
+    "priority":"high", 
+    "skills":[]
+}
+
+###

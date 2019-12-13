@@ -1,42 +1,59 @@
 package main
 
 import (
-	"context"
+	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
+	"github.com/vinchauhan/task-scheduler/internal/handlers"
 	"github.com/vinchauhan/task-scheduler/internal/services"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
 )
 
 const (
 	databaseURL = "postgresql://root@127.0.0.1:26257/tasker?sslmode=disable"
-	webPort = 3000
+	webPort     = 3000
 )
 
 func main() {
 
-	// Set client options
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
-
-	// Connect to MongoDB
-	client, err := mongo.Connect(context.TODO(), clientOptions)
+	//// Set client options
+	//clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	//
+	//// Connect to MongoDB
+	//client, err := mongo.Connect(context.TODO(), clientOptions)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//// Check the connection
+	//err = client.Ping(context.TODO(), nil)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//
+	//fmt.Println("Connected to MongoDB!")
+	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not open connection to db %v\n", err)
+		return
 	}
 
-	// Check the connection
-	err = client.Ping(context.TODO(), nil)
-	if err != nil {
-		log.Fatal(err)
+	defer db.Close()
+
+	//ping the database
+	if err = db.Ping(); err != nil {
+		log.Fatalf("Could not ping to the db : %v\n", err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Printf("Connected to the Database.!")
 
-	s := services.New(databaseURL)
+	//Add the db instance to the service struct needed to talk to the database
+	s := services.New(db)
+	h := handlers.SetUpRoutes(s)
 	address := fmt.Sprintf(":%d", webPort)
-	if err := http.ListenAndServe(address, nil); err != nil {
+	if err := http.ListenAndServe(address, h); err != nil {
 		log.Fatalf("Failed to start the server : %v\n", err)
 	}
+
 }
