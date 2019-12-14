@@ -1,0 +1,47 @@
+[
+  {
+    "agentId": "1",
+    "skills": [
+      "skill1",
+      "skill2"
+    ],
+    "tasks": [
+      {
+        "taskId": "2",
+        "priority": "low",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  },
+  {
+    "agentId": "2",
+    "skills": [
+      "skill1",
+      "skill3"
+    ],
+    "tasks": []
+  },
+  {
+    "agentId": "3",
+    "skills": [
+      "skill1",
+      "skill2"
+    ],
+    "tasks": [
+      {
+        "taskId": "1",
+        "priority": "high",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  },
+  {
+    "agentId": "4",
+    "skills": [
+      "skill1, skill4"
+    ],
+    "tasks": []
+  }
+]

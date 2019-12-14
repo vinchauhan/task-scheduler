@@ -15,7 +15,7 @@ require (
 	github.com/sanity-io/litter v1.2.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.mongodb.org/mongo-driver v1.2.0 // indirect
+	go.mongodb.org/mongo-driver v1.2.0
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
 	golang.org/x/sys v0.0.0-20191210023423-ac6580df4449 // indirect
 	golang.org/x/tools v0.0.0-20191213032237-7093a17b0467

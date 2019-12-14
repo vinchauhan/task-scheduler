@@ -43,3 +43,31 @@ func (h *handler) createNewTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+
+func (h *handler) createNewTaskUsingMongo(w http.ResponseWriter, r *http.Request) {
+	var in TaskInput
+	defer r.Body.Close()
+
+	//decode the incoming request to json
+	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	//litter.Dump(in)
+	//litter.Dump(in.Id)
+	//litter.Dump(in.Priority)
+	//litter.Dump(in.Skills)
+	err := h.CreateTask(r.Context(), in.Id, in.Priority, in.Skills)
+
+	//check for Application define errors
+	if err == services.ErrTaskCannotBeAssigned {
+		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+		return
+	}
+
+	if err == services.ErrFailedToFindAnyAgentWithSkill || err == services.ErrSystemFindingAgent {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+}

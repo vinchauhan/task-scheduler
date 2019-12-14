@@ -4,11 +4,15 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_NAME: piggy
+      MONGO_INITDB_NAME: tasker
       MONGO_INITDB_ROOT_USERNAME: vchauhan
       MONGO_INITDB_ROOT_PASSWORD: vchauhan
     ports:
-      - 26000:27017
+      - 27017:27017
+    networks:
+      mongonet:
+        aliases:
+          - mongo-db
   auth-mongo-db:
     image: mongo
     restart: always
@@ -18,6 +22,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: vchauhan
     ports:
       - 26001:27017
+    networks:
+      mongonet:
+        aliases:
+          - auth-mongo-db
   mongo-express:
     image: mongo-express
     restart: always
@@ -30,9 +38,19 @@ services:
     image: golang:1.13.5-alpine
     volumes:
       - .:/go/src/task-scheduler
+    ports:
+      - 3000:3000
     working_dir: /go/src/task-scheduler
-    command: apk add build-base && go run mongo.go
-    links:
-      - mongo-db
+    command: go run mongo_main.go
+#    links:
+#      - mongo-db
+    networks:
+      mongonet:
+        aliases:
+          - app
     environment:
-      MONGO_URL: mongo-db:26000
+      MONGO_URL: mongo-db:27017
+      CGO_ENABLED: 0
+networks:
+  mongonet:
+    driver: bridge
