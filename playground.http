@@ -4,7 +4,7 @@ Content-Type: application/json
 {
     "id": "1",
     "priority":"high", 
-    "skills":["skill1", "skill2"]
+    "skills":["skill1", "skill3"]
 }
 
 ###

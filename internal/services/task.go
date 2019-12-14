@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/sanity-io/litter"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,11 +16,17 @@ var (
 	ErrFailedToFindAnyAgentWithSkill = errors.New("COULD NOT FIND ANY SKILLED AGENT")
 	ErrSystemFindingAgent = errors.New("SYSTEM ERROR OCCURRED WHILE FINDING AGENT")
 )
-
+type Task struct {
+	TaskId string
+	Priority string
+	Status string
+	StartDateTime string
+}
 type Agent struct {
 	Id string  `json:"id" bson:"_id"`
 	AgentId string
 	Skills []string
+	Tasks []Task
 }
 
 //CreateTask method creates a task on the database
@@ -78,12 +85,37 @@ func (s *Service) CreateTask(ctx context.Context, taskID string, priority string
 	//If no agent found with AND condition of skills && tasks = 0
 	//Then the system should find agents which were probably skillful but didnt get picked because they had tasks with them
 	if out.AgentId == "" {
-		onlySkillFilter := bson.D{{"skills",
+		//onlySkillFilter := bson.D{{"skills",
+		//		bson.D{{
+		//			"$all",
+		//			bson.A{skills},
+		//					}},
+		//				}}
+
+
+		skillMatchWithLowTask := bson.D{{"$and", []bson.D{
+			bson.D{{"skills",
 				bson.D{{
 					"$all",
 					bson.A{skills},
-							}},
-						}}
+				}},
+			}},
+			bson.D{{"tasks", bson.D{{"$elemMatch", bson.A{"priority","low"}}}}},
+		}}}
+
+		cur, err := collection.Find(ctx, skillMatchWithLowTask)
+		for cur.Next(ctx) {
+			err := cursor.Decode(&out)
+			if err != nil {
+				log.Fatal(err)
+			}
+			log.Printf("Got agent with low task")
+		}
+
+		if err != nil {
+			fmt.Errorf("Error in finding matching skill and low agents %v\n",err)
+		}
+
 		//return ErrFailedToFindAnyAgentWithSkill
 	}
 
