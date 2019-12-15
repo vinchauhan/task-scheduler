@@ -54,10 +54,7 @@ func (h *handler) createNewTaskUsingMongo(w http.ResponseWriter, r *http.Request
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	//litter.Dump(in)
-	//litter.Dump(in.Id)
-	//litter.Dump(in.Priority)
-	//litter.Dump(in.Skills)
+	//TODO: Respond with created task in the response for working use case
 	err := h.CreateTask(r.Context(), in.Id, in.Priority, in.Skills)
 
 	//check for Application define errors

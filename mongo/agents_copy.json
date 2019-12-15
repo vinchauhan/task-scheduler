@@ -1,0 +1,62 @@
+[
+  {
+    "agentId": "1",
+    "skills": [
+      "skill1",
+      "skill2"
+    ],
+    "tasks": [
+      {
+        "taskId": "2",
+        "priority": "low",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  },
+  {
+    "agentId": "2",
+    "skills": [
+      "skill1",
+      "skill3"
+    ],
+    "tasks": [
+      {
+        "taskId": "4",
+        "priority": "low",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  },
+  {
+    "agentId": "3",
+    "skills": [
+      "skill1",
+      "skill2"
+    ],
+    "tasks": [
+      {
+        "taskId": "1",
+        "priority": "high",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  },
+  {
+    "agentId": "4",
+    "skills": [
+      "skill1",
+      "skill3"
+    ],
+    "tasks": [
+      {
+        "taskId": "3",
+        "priority": "low",
+        "status": "assigned",
+        "starttime": ""
+      }
+    ]
+  }
+]

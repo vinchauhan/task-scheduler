@@ -31,5 +31,4 @@ services:
       CGO_ENABLED: 0
 networks:
   dev:
-    name: dev
     driver: bridge
