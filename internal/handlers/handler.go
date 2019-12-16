@@ -21,5 +21,7 @@ func SetUpRoutesForMongo(s *services.Service) http.Handler  {
 	h := handler{s}
 	baseRouter := way.NewRouter()
 	baseRouter.HandleFunc("POST", "/task",h.createNewTaskUsingMongo)
+	baseRouter.HandleFunc("PUT", "/task/complete/:taskId",h.completeTask)
+	baseRouter.HandleFunc("PUT", "/task/begin/:taskId",h.beginTask)
 	return baseRouter
 }

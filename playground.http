@@ -2,9 +2,18 @@ POST http://localhost:3000/task
 Content-Type: application/json
 
 {
-    "id": "1",
-    "priority":"high", 
+    "priority":"high",
     "skills":["skill1", "skill3"]
+}
+
+###
+
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+  "priority":"low",
+  "skills":["skill1", "skill3"]
 }
 
 ###
@@ -17,5 +26,10 @@ Content-Type: application/json
     "priority":"high", 
     "skills":[]
 }
+
+###
+
+#Complete the task
+PUT http://localhost:3000/task/complete/5df72c15bbe76664370160dd
 
 ###
