@@ -40,7 +40,7 @@ func main()  {
 	fmt.Println("Connected to MongoDB!")
 
 	//s := services.New(db)
-	service := services.NewClient(ctx, client)
+	service := services.NewService(ctx, client)
 	//h := handlers.SetUpRoutes(s)
 	handler := handlers.SetUpRoutes(service)
 	address := fmt.Sprintf(":%d", webPort)

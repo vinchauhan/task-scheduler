@@ -16,5 +16,6 @@ func SetUpRoutes(s *services.Service) http.Handler  {
 	baseRouter.HandleFunc("POST", "/task",h.createNewTask)
 	baseRouter.HandleFunc("PUT", "/task/complete/:taskId",h.completeTask)
 	baseRouter.HandleFunc("PUT", "/task/begin/:taskId",h.beginTask)
+	baseRouter.HandleFunc("GET", "/agents",h.getAgents)
 	return baseRouter
 }

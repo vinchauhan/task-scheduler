@@ -9,7 +9,7 @@ Content-Type: application/json
 ###
 
 #Begin a task
-PUT http://localhost:3000/task/begin/5df7e79724600682f989bd60
+PUT http://localhost:3000/task/begin/5df863f2e008ea635921f12c
 
 ###
 
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 {
   "priority":"low",
-  "skills":["skill1", "skill3"]
+  "skills":["skill1", "skill2"]
 }
 
 ###
@@ -56,5 +56,9 @@ Content-Type: application/json
 
 #Complete the task
 PUT http://localhost:3000/task/complete/5df7c32177661b81e434f888
+
+###
+
+GET http://localhost:3000/agents
 
 ###

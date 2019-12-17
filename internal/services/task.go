@@ -37,7 +37,6 @@ type Task struct {
 	Status string
 	AgentId string
 	StartDateTime time.Time
-	EndDateTime time.Time
 }
 
 type TaskId struct {
@@ -99,9 +98,18 @@ func (s *Service) CreateTask(ctx context.Context, priority string, skills []stri
 			//Find the task for all of these agentsIds that has a prority low and startdatetime initialized ( Only low can be picked )
 			//Task cannot be assigned to agent working on same or higher priority
 			//Application level join needed to get to all tasks
-			s.findSkilledAgentJustStartedWithLowPriorityTask(ctx, agents)
+			task, err := s.findSkilledAgentJustStartedWithLowPriorityTask(ctx, agents)
+			if err != nil {
+				return taskOut, err
+			}
 
+			//Create the task on table and assign the agent id
+			taskOut, err = s.createNewTaskOnDatabase(ctx, priority, skills, task.AgentId)
 
+			if err != nil {
+				return taskOut, err
+			}
+			return taskOut, err
 		}
 		log.Printf("All Skilled agents are busy - Trying to schedule task")
 		//s.findSkilledAgentsWithExistingTasks(ctx, skills, priority)
@@ -110,36 +118,49 @@ func (s *Service) CreateTask(ctx context.Context, priority string, skills []stri
 	return taskOut, err
 }
 
-func(s *Service) findSkilledAgentJustStartedWithLowPriorityTask(ctx context.Context, agents []string) (Agent, error) {
-
-	var agent Agent
+func(s *Service) findSkilledAgentJustStartedWithLowPriorityTask(ctx context.Context, agents []string) (Task, error) {
 	var task Task
-	var minTimeSince time.Duration
-	minTimeSince = 0
-	filter := bson.D{{"agentid",
-			bson.D{{
-				"$in",
-				bson.A{agents},
-			}},
-		}}
+	var leastStartTimeTask Task
+	var leastTimeSince time.Duration
+	leastTimeSince = -1
+	for _, v := range agents {
+		log.Printf("Agent Id found is %s", v)
+	}
+	//agentsObjIDArray, err := util.ObjectIDArrayFromHex(agents)
+	//if err != nil {
+	//	return task, err
+	//}
 
+	filter := bson.M{"agentid": bson.M{"$in": agents}}
 	cur, err := s.tasksCollection.Find(ctx, filter)
 	if err != nil {
-		return agent, err
+		return task, err
 	}
+	log.Printf("after s.tasksCollection.Find")
 	//Loop through the found tasks to see which one has low priority and lowest time since starttime
 	for cur.Next(ctx) {
+		log.Printf("Inside cursor")
 		err := cur.Decode(&task)
+		log.Printf("Decoded task %s", task.Priority)
 		if err != nil {
-			return agent,err
+			log.Printf("Error thrown %v", err)
+			return leastStartTimeTask,err
 		}
-		if task.Status != "high" {
-			if time.Since(task.StartDateTime) > minTimeSince {
-				minTimeSince = time.Since(task.StartDateTime)
+		if task.Priority != "high" {
+			log.Printf("Inside high block")
+			if leastTimeSince == -1 {
+				leastTimeSince = time.Since(task.StartDateTime)
+				leastStartTimeTask = task
+			} else {
+				if time.Since(task.StartDateTime) < leastTimeSince {
+					leastTimeSince = time.Since(task.StartDateTime)
+					leastStartTimeTask = task
+					}
+				}
 			}
 		}
-
-	}
+	log.Printf("leastStartTimeTask AgentId %s", leastStartTimeTask.AgentId)
+	return leastStartTimeTask, nil
 }
 //	filter := bson.M{"agentid": bson.M{"$in": agents}},
 //			  bson.M{"$elemMatch": bson.M{priority: "low"}},

@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"github.com/vinchauhan/task-scheduler/internal/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,11 +9,24 @@ import (
 )
 
 type Service struct {
-	db *sql.DB
 	mongoClient *mongo.Client
 	ctx context.Context
 	tasksCollection *mongo.Collection
 	agentsCollection *mongo.Collection
+}
+
+//Designed using interface to support mocking
+type ServiceLayer interface {
+	GetService(ctx context.Context, client *mongo.Client) *Service
+}
+
+func (s* Service) GetService(ctx context.Context, client *mongo.Client) *Service {
+	return &Service{
+		mongoClient:client,
+		ctx:ctx,
+		tasksCollection:client.Database("tasker").Collection("tasks"),
+		agentsCollection:client.Database("tasker").Collection("agents"),
+	}
 }
 
 func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skills []string) {
@@ -53,9 +65,8 @@ func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skil
 	}
 }
 
-func NewClient(ctx context.Context, mongoClient *mongo.Client) *Service  {
+func NewService(ctx context.Context, mongoClient *mongo.Client) *Service  {
 	return &Service{
-		db: nil,
 		mongoClient:mongoClient,
 		ctx:ctx,
 		tasksCollection:mongoClient.Database("tasker").Collection("tasks"),
