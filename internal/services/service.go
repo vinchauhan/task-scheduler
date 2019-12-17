@@ -53,11 +53,7 @@ func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skil
 	}
 }
 
-func New(db *sql.DB) *Service {
-	return &Service{db: db}
-}
-
-func NewMongoClient(ctx context.Context, mongoClient *mongo.Client) *Service  {
+func NewClient(ctx context.Context, mongoClient *mongo.Client) *Service  {
 	return &Service{
 		db: nil,
 		mongoClient:mongoClient,

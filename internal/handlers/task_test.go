@@ -1,27 +1,22 @@
 package handlers_test
 
 import (
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
-	"io/ioutil"
+	"github.com/matryer/way"
 	"net/http/httptest"
+	"testing"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
-var _ = Describe("Task", func() {
-	It("should return a JSON for created task", func() {
-		//taskHandler := handlers.Task{}
-
+func TestCompleteTask(t *testing.T) {
+	Convey("Given a HTTP request for /task", t, func() {
+		req := httptest.NewRequest("POST", "/task", nil)
 		resp := httptest.NewRecorder()
-		//req := httptest.NewRequest("POST", "/xyz", nil)
-		//h := handlers.New()
-		//taskHandler := http.HandlerFunc(handlers.SetUpRoutesForMongo())
-		//taskHandler.ServeHTTP(resp, req)
+		Convey("When the request is handled by the Router", func() {
+			way.NewRouter().ServeHTTP(resp, req)
+			Convey("Then the response should be a 404", func() {
+				So(resp.Code, ShouldEqual, 404)
+			})
+		})
 
-		Expect(resp.Code).To(Equal(200))
-
-		respBytes, err := ioutil.ReadAll(resp.Body)
-		Expect(err).NotTo(HaveOccurred())
-
-		Expect(respBytes).To(MatchJSON(`{"id": "1","priority":"high", "skills":"skill1, skill2","agentId":"3"}`))
 	})
-})
+}

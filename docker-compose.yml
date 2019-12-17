@@ -23,7 +23,7 @@ services:
     ports:
       - 3000:3000
     working_dir: /go/src/task-scheduler
-    command: go run mongo_main.go
+    command: go run main.go
     networks:
       - dev
     environment:

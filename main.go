@@ -1,13 +1,16 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
-	_ "github.com/lib/pq"
 	"github.com/vinchauhan/task-scheduler/internal/handlers"
 	"github.com/vinchauhan/task-scheduler/internal/services"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"net/http"
+	"os"
+	"time"
 )
 
 const (
@@ -15,28 +18,33 @@ const (
 	webPort     = 3000
 )
 
-func main() {
-	db, err := sql.Open("postgres", databaseURL)
+func main()  {
+	//mongoUrl := "mongodb://"+os.Getenv("MONGO_URL")
+	// Set client options
+	mongoUrl := "mongodb://"+os.Getenv("MONGO_URL")
+	clientOptions := options.Client().ApplyURI(mongoUrl)
+
+	// Connect to MongoDB
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatalf("Could not open connection to Database : ?? %v\n", err)
-		return
+		log.Fatal(err)
 	}
 
-	defer db.Close()
-
-	//ping the database
-	if err = db.Ping(); err != nil {
-		log.Fatalf("Could not ping to the Database : ?? %v\n", err)
+	// Check the connection
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	log.Printf("Connected to the Database.!")
+	fmt.Println("Connected to MongoDB!")
 
-	//Add the db instance to the service struct needed to talk to the database
-	s := services.New(db)
-	h := handlers.SetUpRoutes(s)
+	//s := services.New(db)
+	service := services.NewClient(ctx, client)
+	//h := handlers.SetUpRoutes(s)
+	handler := handlers.SetUpRoutes(service)
 	address := fmt.Sprintf(":%d", webPort)
-	if err := http.ListenAndServe(address, h); err != nil {
+	if err := http.ListenAndServe(address, handler); err != nil {
 		log.Fatalf("Failed to start the server : %v\n", err)
 	}
-
 }

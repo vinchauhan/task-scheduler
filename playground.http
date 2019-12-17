@@ -8,6 +8,31 @@ Content-Type: application/json
 
 ###
 
+#Begin a task
+PUT http://localhost:3000/task/begin/5df7e79724600682f989bd60
+
+###
+
+
+#Complete a task
+PUT http://localhost:3000/task/complete/5df7e79724600682f989bd60
+
+###
+
+
+###
+#Create task with no skills defined for the task should fail
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+  "id": "1",
+  "priority":"high",
+  "skills":[]
+}
+
+###
+#Low priority task
 POST http://localhost:3000/task
 Content-Type: application/json
 
@@ -30,6 +55,6 @@ Content-Type: application/json
 ###
 
 #Complete the task
-PUT http://localhost:3000/task/complete/5df72c15bbe76664370160dd
+PUT http://localhost:3000/task/complete/5df7c32177661b81e434f888
 
 ###
