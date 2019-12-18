@@ -9,7 +9,7 @@ Content-Type: application/json
 ###
 
 #Begin a task
-PUT http://localhost:3000/task/begin/5df863f2e008ea635921f12c
+PUT http://localhost:3000/task/begin/5df9a8f0bd02f9890959e10a
 
 ###
 
@@ -60,5 +60,19 @@ PUT http://localhost:3000/task/complete/5df7c32177661b81e434f888
 ###
 
 GET http://localhost:3000/agents
+
+###
+
+###
+# An high priority task with matching skills agents will be schedule to the agent which started working on the task
+# most recently.
+
+POST http://localhost:3000/task
+Content-Type: application/json
+
+{
+  "priority":"high",
+  "skills":["skill1", "skill2"]
+}
 
 ###

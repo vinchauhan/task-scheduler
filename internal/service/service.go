@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"context"
@@ -9,24 +9,10 @@ import (
 )
 
 type Service struct {
-	mongoClient *mongo.Client
+	db *mongo.Client
 	ctx context.Context
 	tasksCollection *mongo.Collection
 	agentsCollection *mongo.Collection
-}
-
-//Designed using interface to support mocking
-type ServiceLayer interface {
-	GetService(ctx context.Context, client *mongo.Client) *Service
-}
-
-func (s* Service) GetService(ctx context.Context, client *mongo.Client) *Service {
-	return &Service{
-		mongoClient:client,
-		ctx:ctx,
-		tasksCollection:client.Database("tasker").Collection("tasks"),
-		agentsCollection:client.Database("tasker").Collection("agents"),
-	}
 }
 
 func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skills []string) {
@@ -50,14 +36,10 @@ func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skil
 		taskCursor, err := s.tasksCollection.Find(ctx, bson.M{"_id": bson.M{"$in": tasksObjectIds}})
 		for taskCursor.Next(ctx) {
 			var taskForSkilledAgent TaskOutput
-			log.Printf("Looping cursor object for Tasks")
 			err := taskCursor.Decode(&taskForSkilledAgent)
 			if err != nil {
 				log.Fatalf("Error decoding the object from cursor %v\n", err)
 			}
-			log.Printf("Got task for agent matching skill with Mongo document Id %s", taskForSkilledAgent.Id)
-			log.Printf("Got task for agent matching skill with Priority Id %s", taskForSkilledAgent.Priority)
-			log.Printf("Got task for agent matching skill with status %s", taskForSkilledAgent.Skills)
 		}
 	}
 	if err != nil {
@@ -65,11 +47,10 @@ func (s *Service) findSkilledAgentWorkingOnLowPriority(ctx context.Context, skil
 	}
 }
 
-func NewService(ctx context.Context, mongoClient *mongo.Client) *Service  {
+func New(client *mongo.Client) *Service {
 	return &Service{
-		mongoClient:mongoClient,
-		ctx:ctx,
-		tasksCollection:mongoClient.Database("tasker").Collection("tasks"),
-		agentsCollection:mongoClient.Database("tasker").Collection("agents"),
+		db:client,
+		tasksCollection:client.Database("tasker").Collection("tasks"),
+		agentsCollection:client.Database("tasker").Collection("agents"),
 	}
 }

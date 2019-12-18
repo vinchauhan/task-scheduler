@@ -3,48 +3,42 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/vinchauhan/task-scheduler/internal/handlers"
-	"github.com/vinchauhan/task-scheduler/internal/services"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/vinchauhan/task-scheduler/internal/db"
+	"github.com/vinchauhan/task-scheduler/internal/handler"
+	"github.com/vinchauhan/task-scheduler/internal/service"
 	"log"
 	"net/http"
 	"os"
-	"time"
 )
 
-const (
-	databaseURL = "postgresql://root@127.0.0.1:26257/tasker?sslmode=disable"
-	webPort     = 3000
-)
+const webPort = 3000
 
 func main()  {
-	//mongoUrl := "mongodb://"+os.Getenv("MONGO_URL")
-	// Set client options
-	mongoUrl := "mongodb://"+os.Getenv("MONGO_URL")
-	clientOptions := options.Client().ApplyURI(mongoUrl)
+	mongo := db.New("mongodb://"+os.Getenv("MONGO_URL"))
+	ctx := context.Background()
+	conn, err := mongo.Plug()
 
-	// Connect to MongoDB
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error plugging to the database %v\n", err)
 	}
 
-	// Check the connection
-	err = client.Ping(ctx, nil)
+	//Ping the database
+	err = conn.Ping(ctx,nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("Connected to MongoDB!")
 
-	//s := services.New(db)
-	service := services.NewService(ctx, client)
-	//h := handlers.SetUpRoutes(s)
-	handler := handlers.SetUpRoutes(service)
+	//Initialize a service instance
+	s := service.New(conn)
+	//service := service.NewService(ctx, conn)
+	//h := handler.SetUpRoutes(s)
+	//Initialize a handler instance
+	h := handler.NewRouter(s)
+	//handler := handler.SetUpRoutes(service)
 	address := fmt.Sprintf(":%d", webPort)
-	if err := http.ListenAndServe(address, handler); err != nil {
+	if err := http.ListenAndServe(address, h); err != nil {
 		log.Fatalf("Failed to start the server : %v\n", err)
 	}
 }

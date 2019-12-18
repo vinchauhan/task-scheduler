@@ -1,10 +1,10 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
 	"github.com/matryer/way"
 	"github.com/sanity-io/litter"
-	"github.com/vinchauhan/task-scheduler/internal/services"
+	"github.com/vinchauhan/task-scheduler/internal/service"
 	"net/http"
 )
 
@@ -25,8 +25,8 @@ func (h *handler) createNewTask(w http.ResponseWriter, r *http.Request) {
 	task, err := h.CreateTask(r.Context(), in.Priority, in.Skills)
 
 	//check for Application define errors
-	if err == services.ErrTaskDoesNotHaveSkills {
-		http.Error(w, services.ErrTaskDoesNotHaveSkills.Error(), http.StatusBadRequest)
+	if err == service.ErrTaskDoesNotHaveSkills {
+		http.Error(w, service.ErrTaskDoesNotHaveSkills.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -35,7 +35,7 @@ func (h *handler) createNewTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "No Agents found at this time", http.StatusInternalServerError)
 		return
 	}
-	if err == services.ErrFailedToFindAnyAgentWithSkill || err == services.ErrSystemFindingAgent {
+	if err == service.ErrFailedToFindAnyAgentWithSkill || err == service.ErrSystemFindingAgent {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}

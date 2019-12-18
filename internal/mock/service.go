@@ -2,7 +2,7 @@ package mock
 
 import (
 	"context"
-	"github.com/vinchauhan/task-scheduler/internal/services"
+	"github.com/vinchauhan/task-scheduler/internal/service"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -13,12 +13,12 @@ type ServiceMock struct {
 				client *mongo.Client
 			}
 			Returns struct{
-				Service *services.Service
+				Service *service.Service
 			}
 		}
 }
 
-func (m *ServiceMock) GetService(ctx context.Context, client *mongo.Client) *services.Service {
+func (m *ServiceMock) GetService(ctx context.Context, client *mongo.Client) *service.Service {
 	m.GetServiceCall.Receives.ctx = ctx
 	m.GetServiceCall.Receives.client = client
 	return m.GetServiceCall.Returns.Service

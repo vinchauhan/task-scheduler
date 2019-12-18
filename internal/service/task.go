@@ -1,10 +1,9 @@
-package services
+package service
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/sanity-io/litter"
 	"github.com/vinchauhan/task-scheduler/internal/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -52,7 +51,6 @@ type Agent struct {
 
 //CreateTask method creates a task on the database
 func (s *Service) CreateTask(ctx context.Context, priority string, skills []string) (TaskOutput , error) {
-	log.Printf("Create Task Called")
 	var taskOut TaskOutput
 	//If skills for the passed task is nil which should be not allowed from UI but still The system cannot decide which agent to be assigned.
 	if len(skills) == 0 {
@@ -68,10 +66,8 @@ func (s *Service) CreateTask(ctx context.Context, priority string, skills []stri
 	}
 	//If the agent with right skill was found and had no task to him
 	if agent.Id != "" {
-		log.Printf("Found skilled agent is found with no task")
 		//Create the task in the task collection and then add the id to Agents > task column.
 		taskOut, err = s.createNewTaskOnDatabase(ctx, priority, skills, agent.Id)
-		log.Printf("Task Created with taskId %s", taskOut.Id)
 		if err !=nil {
 			return taskOut, ErrTaskCouldNotBeCreated
 		}
@@ -93,7 +89,6 @@ func (s *Service) CreateTask(ctx context.Context, priority string, skills []stri
 			if err != nil {
 				return taskOut, err
 			}
-			log.Printf("Found %d agents which matches the skill", len(agents))
 
 			//Find the task for all of these agentsIds that has a prority low and startdatetime initialized ( Only low can be picked )
 			//Task cannot be assigned to agent working on same or higher priority
@@ -126,24 +121,16 @@ func(s *Service) findSkilledAgentJustStartedWithLowPriorityTask(ctx context.Cont
 	for _, v := range agents {
 		log.Printf("Agent Id found is %s", v)
 	}
-	//agentsObjIDArray, err := util.ObjectIDArrayFromHex(agents)
-	//if err != nil {
-	//	return task, err
-	//}
 
 	filter := bson.M{"agentid": bson.M{"$in": agents}}
 	cur, err := s.tasksCollection.Find(ctx, filter)
 	if err != nil {
 		return task, err
 	}
-	log.Printf("after s.tasksCollection.Find")
 	//Loop through the found tasks to see which one has low priority and lowest time since starttime
 	for cur.Next(ctx) {
-		log.Printf("Inside cursor")
 		err := cur.Decode(&task)
-		log.Printf("Decoded task %s", task.Priority)
 		if err != nil {
-			log.Printf("Error thrown %v", err)
 			return leastStartTimeTask,err
 		}
 		if task.Priority != "high" {
@@ -162,11 +149,6 @@ func(s *Service) findSkilledAgentJustStartedWithLowPriorityTask(ctx context.Cont
 	log.Printf("leastStartTimeTask AgentId %s", leastStartTimeTask.AgentId)
 	return leastStartTimeTask, nil
 }
-//	filter := bson.M{"agentid": bson.M{"$in": agents}},
-//			  bson.M{"$elemMatch": bson.M{priority: "low"}},
-//	cur, err := s.tasksCollection.Find(ctx, bson.M{"agentid": bson.M{"$in": agents}},
-//		bson.M{"$elemMatch": bson.M{priority: "low"}}	)
-//}
 
 func (s *Service) CompleteTask(ctx context.Context, id string) (string, error) {
 	var task TaskOutput
@@ -260,14 +242,10 @@ func (s *Service) findSkilledAgentsWithExistingTasks(ctx context.Context, skills
 		taskCursor, err := s.tasksCollection.Find(ctx, bson.M{"_id": bson.M{"$in": tasksObjectIds}})
 		for taskCursor.Next(ctx) {
 			var taskForSkilledAgent TaskOutput
-			log.Printf("Looping cursor object for Tasks")
 			err := taskCursor.Decode(&taskForSkilledAgent)
 			if err != nil {
 				log.Fatalf("Error decoding the object from cursor %v\n", err)
 			}
-			log.Printf("Got task for agent matching skill with Mongo document Id %s", taskForSkilledAgent.Id)
-			log.Printf("Got task for agent matching skill with Priority Id %s", taskForSkilledAgent.Priority)
-			log.Printf("Got task for agent matching skill with status %s", taskForSkilledAgent.Skills)
 		}
 
 	}
@@ -336,7 +314,7 @@ func findAgentWithSkillAndNoTasks(ctx context.Context, collection *mongo.Collect
 	if err != nil {
 		return fetchedAgent, err
 	}
-	litter.Dump(fetchedAgent)
+	//litter.Dump(fetchedAgent)
 	return fetchedAgent, nil
 }
 

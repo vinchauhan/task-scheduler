@@ -1,17 +1,17 @@
-package handlers
+package handler
 
 import (
-	"github.com/vinchauhan/task-scheduler/internal/services"
+	"github.com/vinchauhan/task-scheduler/internal/service"
 	"net/http"
 )
 
 func (h *handler) getAgents(writer http.ResponseWriter, request *http.Request) {
-	var agentsOut []services.Agent
+	var agentsOut []service.Agent
 
 	//Fetch all Agents in the system.
 	agentsOut, err := h.GetAgents(request.Context())
-	if err == services.ErrFailedToFetchAgents {
-		http.Error(writer, services.ErrFailedToFetchAgents.Error(), http.StatusInternalServerError)
+	if err == service.ErrFailedToFetchAgents {
+		http.Error(writer, service.ErrFailedToFetchAgents.Error(), http.StatusInternalServerError)
 		return
 	}
 
